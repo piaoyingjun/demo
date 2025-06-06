@@ -1,0 +1,11 @@
+<h1>FlightからTicketFightsを調べる</h1>
+<ul>
+    {% comment %} {% for ticket_flight in flights.ticketflights_set.all %} {% endcomment %}
+    {% for ticket_flight in ticketflights %}
+        <li>ticket_no：{{ ticket_flight.ticket_no.ticket_no }}　　fare_conditions：{{ ticket_flight.fare_conditions }}　　amount：{{ ticket_flight.amount }}</li>
+    {% empty %}
+        <li>No TicketFlights available.</li>
+    {% endfor %}
+    <li><a href="{% url 'booking:listfights' %}">Fights一覧へ</a></li>
+
+</body>

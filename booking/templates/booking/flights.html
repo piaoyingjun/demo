@@ -1,0 +1,24 @@
+<h1>Fights一覧</h1>
+<ul>
+    {% for flight in flights %}
+        <li>
+            <span>flight_id: </span><a href="{% url 'booking:flightstoticketflights' flight.flight_id  %}">{{ flight.flight_id }}</a>
+            <br>
+            <dl>
+                <dt>flight_no:</dt>
+                <dd>{{ flight.flight_no }}</dd>
+                <dt>scheduled_departure:</dt>
+                <dd>{{ flight.scheduled_departure }}</dd>
+                <dt>scheduled_arrival:</dt>
+                <dd>{{ flight.scheduled_arrival }}</dd>
+                <dt>departure_airport:</dt>
+                <dd>{{ flight.departure_airport }}</dd>
+                <dt>status:</dt>
+                <dd>{{ flight.status }}</dd>
+                <dt>aircraft_code:</dt>
+                <dd>{{ flight.aircraft_code }}</dd>
+        </li>
+    {% empty %}
+        <li>No fights available.</li>
+    {% endfor %}
+</body>
