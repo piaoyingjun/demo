@@ -9,24 +9,21 @@ from .models import Flights, TicketFlights
 def mainpage(request):
     return render(request, 'booking/mainpage.html')
 
-class ListFights(ListView):
+class ListFlights(ListView):
     model = Flights
     template_name = 'booking/flights.html'
     context_object_name = 'flights'
 
     def get_queryset(self):
-        return super().get_queryset().select_related("departure_airport","arrival_airport","aircraft_code")
-        #return super().get_queryset().select_related().all()
+        return super().get_queryset().select_related().all()[:100]
 
 class FlightsToTicketFlights(ListView):
     model = TicketFlights
     template_name = 'booking/ticketflights.html'
-    # def get(self,request,flight_id):
-    #     # ticket_flights = get_list_or_404(TicketFlights.objects.select_related(),flight_id=flight_id)
-    #     ticket_flights = get_list_or_404(TicketFlights,flight_id=flight_id)
-    #     return render(request, "booking/ticketflights.html", {"ticketflights":ticket_flights})
-        # query_set = super().get_queryset().select_related("departure_airport","arrival_airport","aircraft_code")
+    def get(self,request,flight_id):
+        ticket_flights = get_list_or_404(TicketFlights.objects.select_related("ticket_no"),flight_id=flight_id)
+        return render(request, "booking/ticketflights.html", {"ticketflights":ticket_flights})
 
 
-listfights = ListFights.as_view()
+listflights = ListFlights.as_view()
 flightstoticketflights = FlightsToTicketFlights.as_view()
