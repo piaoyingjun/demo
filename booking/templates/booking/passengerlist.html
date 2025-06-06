@@ -1,0 +1,16 @@
+<h1>よく飛行機に搭乗する顧客TOP１０</h1>
+<li><a href="{% url 'booking:mainpage' %}">メインページへ</a></li>
+<table>
+    <tr>
+        <th>顧客名</th>
+        <th>搭乗回数</th>
+    </tr>
+    {% for passenger in passengerlist %}
+    <tr>
+       <td><a href="{% url 'booking:passenger_name' passenger.passenger_name  %}">{{ passenger.passenger_name }}</a></td> 
+        {% comment %} <td>{{ passenger.passenger_name }}</td> {% endcomment %}
+        <td>{{ passenger.pass_count }}</td>
+    </tr>
+    {% endfor %}
+</body>
+

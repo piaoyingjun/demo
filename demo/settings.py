@@ -141,3 +141,60 @@ INTERNAL_IPS = [
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+
+import os
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,  # これが True だと問題が起きやすい
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {asctime} [{name}] {message}', # {name} を追加するとロガー名がわかる
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'DEBUG',  # ハンドラのレベルをDEBUGにしてみる (問題切り分けのため)
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple', # または 'verbose'
+        },
+        # ファイルに出力したい場合
+        # 'file': {
+        #     'level': 'INFO',
+        #     'class': 'logging.FileHandler',
+        #     'filename': os.path.join(BASE_DIR, 'app.log'), # BASE_DIR が定義されていること
+        #     'formatter': 'verbose',
+        # },
+    },
+    'root': { # ルートロガー: 全てのロガーの基本設定
+        'handlers': ['console'], # ここに 'file' も追加可能
+        'level': 'DEBUG', # ルートロガーのレベル
+    },
+    'loggers': {
+        'django': { # Django自体のログ設定
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'), # 環境変数で変更可能にする例
+            'propagate': False, # Djangoのログがルートに行かないようにする
+        },
+        # --- ここからが重要 ---
+        'your_app_name': { # logger = logging.getLogger('your_app_name.views') の 'your_app_name' 部分
+            'handlers': ['console'], # または ['console', 'file']
+            'level': 'DEBUG', # INFOログを見たいので、DEBUGかINFOに設定
+            'propagate': False, # このロガーのログを上位(root)に伝播させない場合
+        },
+        # もし logger = logging.getLogger(__name__) を使っていて、
+        # ビューが 'your_app_name.views' というモジュールにあるなら、上記のように設定するか、
+        # より具体的に 'your_app_name.views' という名前でロガーを設定します。
+        # 'your_app_name.views': {
+        #     'handlers': ['console'],
+        #     'level': 'DEBUG',
+        #     'propagate': False,
+        # },
+    },
+}
