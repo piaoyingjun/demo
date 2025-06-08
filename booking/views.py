@@ -43,23 +43,26 @@ class PassengerList(ListView):
 class PassengerInfo(DetailView):
     def get(self, request, passenger_name):
         logger.debug(f"Passenger Name: {passenger_name}")
-        # try:
-        # passenger_infos = get_list_or_404(TicketFlights.objects.select_related("ticket_no"), passenger_name=passenger_name)
-        # passenger_infos = TicketFlights.objects.filter(ticket_no__passenger_name=passenger_name)
-        passenger_infos = TicketFlights.objects.filter( \
-            ticket_no__passenger_name=passenger_name \
-            ).values( \
-                'ticket_no__ticket_no', \
-                'ticket_no__passenger_name', \
-                'flight_id', \
-                'fare_conditions', \
-                'amount' \
-            )
-        logger.debug(f"Passenger Info: {passenger_infos}")
+        passenger_infos = TicketFlights.objects.filter(
+            ticket_no__passenger_name=passenger_name
+        ).select_related(
+            'ticket_no','flight_id','arrival_airpor','aircraft_code'
+        ).values(
+            'ticket_no__ticket_no',
+            'ticket_no__passenger_name',
+            'flight_id',
+            'fare_conditions',
+            'amount',
+            'flight_id__scheduled_departure',
+            'flight_id__scheduled_arrival',
+            'flight_id__actual_departure',
+            'flight_id__actual_arrival',
+            'flight_id__arrival_airport__airport_name',
+            'flight_id__arrival_airport__city',
+            'flight_id__arrival_airport__timezone',
+            'flight_id__aircraft_code__model'
+        )[:200]
         return render(request, "booking/passengerinfo.html", {"passengerinfos": passenger_infos})
-        # except TicketFlights.DoesNotExist:
-        #     logger.debug(f"LOG:NO Passenger Name: ")
-        #     raise Http404("No MyModel matches the given query.")
 
 listflights = ListFlights.as_view()
 flightstoticketflights = FlightsToTicketFlights.as_view()
