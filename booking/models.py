@@ -32,19 +32,6 @@ class AirportsData(models.Model):
         db_table_comment = 'Airports (internal data)'
 
 
-class BoardingPasses(models.Model):
-    pk = models.CompositePrimaryKey('ticket_no', 'flight_id')
-    ticket_no = models.ForeignKey('Tickets', models.DO_NOTHING, db_column='ticket_no', db_comment='Ticket number')
-    flight_id = models.IntegerField(db_comment='Flight ID')
-    boarding_no = models.IntegerField(db_comment='Boarding pass number')
-    seat_no = models.CharField(max_length=4, db_comment='Seat number')
-
-    class Meta:
-        managed = False
-        db_table = 'boarding_passes'
-        unique_together = (('flight_id', 'boarding_no'), ('flight_id', 'seat_no'),)
-        db_table_comment = 'Boarding passes'
-
 
 class Bookings(models.Model):
     book_ref = models.CharField(primary_key=True, max_length=6, db_comment='Booking number')
@@ -76,9 +63,30 @@ class Flights(models.Model):
         db_table_comment = 'Flights'
 
 
+class BoardingPasses(models.Model):
+    pk = models.CompositePrimaryKey('ticket_no', 'flight_id')
+    ticket_no = models.ForeignKey('Tickets', models.DO_NOTHING, db_column='ticket_no', db_comment='Ticket number')
+    
+    # --- 修正前 ---
+    # flight_id = models.IntegerField(db_comment='Flight ID')
+    
+    # --- 修正後 ---
+    # フィールド名を 'flight' に変更し、ForeignKeyとしてFlightsモデルに関連付ける
+    # db_column='flight_id' を指定することで、データベース上のカラム名は変わりません
+    flight = models.ForeignKey(Flights, models.DO_NOTHING, db_column='flight_id')
+    
+    boarding_no = models.IntegerField(db_comment='Boarding pass number')
+    seat_no = models.CharField(max_length=4, db_comment='Seat number')
+
+    class Meta:
+        managed = False
+        db_table = 'boarding_passes'
+        unique_together = (('flight_id', 'boarding_no'), ('flight_id', 'seat_no'),)
+        db_table_comment = 'Boarding passes'
+
 class Seats(models.Model):
     pk = models.CompositePrimaryKey('aircraft_code', 'seat_no')
-    aircraft_code = models.ForeignKey(AircraftsData, models.DO_NOTHING, db_column='aircraft_code', db_comment='Aircraft code, IATA')
+    aircraft_code = models.ForeignKey(AircraftsData, models.DO_NOTHING, db_column='aircraft_code', db_comment='Aircraft code, IATA', related_name='aircrafts_data_set')
     seat_no = models.CharField(max_length=4, db_comment='Seat number')
     fare_conditions = models.CharField(max_length=10, db_comment='Travel class')
 
@@ -91,7 +99,7 @@ class Seats(models.Model):
 class TicketFlights(models.Model):
     pk = models.CompositePrimaryKey('ticket_no', 'flight_id')
     ticket_no = models.ForeignKey('Tickets', models.DO_NOTHING, db_column='ticket_no', db_comment='Ticket number')
-    flight = models.ForeignKey(Flights, models.DO_NOTHING, db_comment='Flight ID')
+    flight = models.ForeignKey(Flights, models.DO_NOTHING, db_column='flight_id')
     fare_conditions = models.CharField(max_length=10, db_comment='Travel class')
     amount = models.DecimalField(max_digits=10, decimal_places=2, db_comment='Travel cost')
 

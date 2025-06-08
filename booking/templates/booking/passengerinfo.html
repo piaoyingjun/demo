@@ -1,39 +1,26 @@
 <h1>搭乗顧客のフライト情報</h1>
 <li><a href="{% url 'booking:passenger_list' %}">搭乗顧客情報を調べる</a></li>
-{% comment %} <h2>{{ passengerinfos.passenger_name }}さんのフライト情報</h2> {% endcomment %}
-<ul>
+ <ul>
     {% for passengerinfo in passengerinfos %}
     <li>
     <dl>
         <dt>passenger_name:</dt>
         <dd>{{passengerinfo.ticket_no__passenger_name}}</dd>
-        <dt>flight_id:</dt>
-        <dd>{{passengerinfo.flight_id}}</dd>
+        <dt>flight_no:</dt>
+        <dd>{{passengerinfo.flight__flight_no}}</dd>
         <dt>ticket_no:</dt>
         <dd>{{passengerinfo.ticket_no__ticket_no}}</dd>
         <dt>fare_conditions:</dt>
         <dd> {{passengerinfo.fare_conditions}}</dd>
+        <dt>seat_no:</dt>
+        <dd> {{passengerinfo.seat_no}}</dd>
         <dt>amount:</dt>
         <dd>{{passengerinfo.amount}}</dd>
+        <dt>Total Amount:</dt>
+        <dd>{{passengerinfo.ticket_no__book_ref__total_amount}}</dd>
     </dl>
 </li>
     {% endfor %}
 </ul>
-{% comment %} <table>
-    <tr>
-        <th>フライト番号</th>
-        <th>出発地</th>
-        <th>目的地</th>
-        <th>出発日</th>
-        <th>到着日</th>
-    </tr>
-    {% for flight in flights %}
-    <tr>
-        <td>{{ flight.flight_number }}</td>
-        <td>{{ flight.departure_city }}</td>
-        <td>{{ flight.arrival_city }}</td>
-        <td>{{ flight.departure_date }}</td>
-        <td>{{ flight.arrival_date }}</td>
-    </tr>
-    {% endfor %}  {% endcomment %}
+
 </body>
